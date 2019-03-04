@@ -21,7 +21,7 @@ public class Obstacle : MonoBehaviour {
 
         if (_isFatal && collision.collider.gameObject.CompareTag("Ball"))
         {
-            Debug.Log("GameOver!!");
+            GameManager.instance.FinishGame(true);
         }
     }
 }

@@ -11,9 +11,11 @@ public class BallController : MonoBehaviour {
     private float _maxSpeed = 15.0f;
     private Rigidbody _rigidbody;
     private Vector3 _lastMousePosition;
+    private bool _hasStarted;
 
     void Start ()
     {
+        _hasStarted = false;
         _rigidbody = GetComponent<Rigidbody>();
         _lastMousePosition = Input.mousePosition;
 	}
@@ -38,6 +40,11 @@ public class BallController : MonoBehaviour {
     {
         if(Input.GetMouseButton(0))
         {
+            if(!_hasStarted)
+            {
+                GameManager.instance.StartGame();
+                _hasStarted = true;
+            }
             Vector3 result = (Input.mousePosition - _lastMousePosition) * _sensitivity;
             _lastMousePosition = Input.mousePosition;
             result.z = result.y;
