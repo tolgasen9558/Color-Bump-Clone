@@ -4,21 +4,24 @@ public class Obstacle : MonoBehaviour {
 
     [SerializeField]
     private bool _isFatal;
+    private Rigidbody _rigidBody;
 
-
-	// Use this for initialization
-	void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+    private void Start()
+    {
+        _rigidBody = GetComponent<Rigidbody>();
+        _rigidBody.constraints = RigidbodyConstraints.FreezeRotation;
+    }
 
     private void OnCollisionEnter(Collision collision)
     {
-        if(_isFatal && collision.collider.gameObject.CompareTag("Ball"))
+        if(!collision.collider.gameObject.CompareTag("Ground"))
+        {
+            _rigidBody.constraints = RigidbodyConstraints.None;
+        }
+
+        if (_isFatal && collision.collider.gameObject.CompareTag("Ball"))
+        {
             Debug.Log("GameOver!!");
+        }
     }
 }
