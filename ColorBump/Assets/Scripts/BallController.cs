@@ -5,6 +5,9 @@ using UnityEngine;
 public class BallController : MonoBehaviour {
 
     [SerializeField]
+    private LayerMask inputHitLayer;
+
+    [SerializeField]
     private float _sensitivity = 1.25f;
     private Vector3 _mouseDragStart;
     private Vector3 _mouseMovementVector;
@@ -13,11 +16,12 @@ public class BallController : MonoBehaviour {
     private Vector3 _lastMousePosition;
     private bool _hasStarted;
 
+
     void Start ()
     {
         _hasStarted = false;
         _rigidbody = GetComponent<Rigidbody>();
-        _lastMousePosition = Input.mousePosition;
+        _lastMousePosition = CastMouseInputToPlane();
 	}
 	
 	void Update ()
@@ -35,24 +39,35 @@ public class BallController : MonoBehaviour {
 
 	}
 
-
     private Vector3 GetMouseMovementVector()
     {
         if(Input.GetMouseButton(0))
         {
-            if(!_hasStarted)
+            if (!_hasStarted)
             {
                 GameManager.instance.StartGame();
                 _hasStarted = true;
             }
-            Vector3 result = (Input.mousePosition - _lastMousePosition) * _sensitivity;
-            _lastMousePosition = Input.mousePosition;
-            result.z = result.y;
-            result.y = 0;
+            Vector3 currentMousePos = CastMouseInputToPlane();
+            Vector3 result = (currentMousePos - _lastMousePosition) * _sensitivity;
+            _lastMousePosition = currentMousePos;
+
             return result;
         }
 
-        _lastMousePosition = Input.mousePosition;
+        _lastMousePosition = CastMouseInputToPlane();
+        return Vector3.zero;
+    }
+
+    private Vector3 CastMouseInputToPlane()
+    {
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        RaycastHit hitInfo;
+        if (Physics.Raycast(ray, out hitInfo, 50, inputHitLayer))
+        {
+            return hitInfo.point;
+        }
+
         return Vector3.zero;
     }
 }
